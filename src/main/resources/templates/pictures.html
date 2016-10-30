@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+  <title>Customer : View all</title>
+</head>
+<body>
+<h1 layout:fragment="header">Your name</h1>
+<div layout:fragment="content" class="container">
+  <p th:text="'Hello, ' + ${name} + '!'"/>
+  <img th:src="${url}"/>
+  <p th:text="${caption}"/>
+  <p th:text="${tags}"/>
+
+
+</div>
+</body>
+</html>
