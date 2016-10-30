@@ -1,14 +1,10 @@
 package com.flairtradetravels;
 
-import com.mashape.unirest.http.Unirest;
 import org.jinstagram.auth.model.Token;
 import org.jinstagram.auth.model.Verifier;
 import org.jinstagram.auth.oauth.InstagramService;
 import org.jinstagram.exceptions.InstagramException;
-import org.jinstagram.realtime.InstagramSubscription;
-import org.jinstagram.realtime.SubscriptionType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
