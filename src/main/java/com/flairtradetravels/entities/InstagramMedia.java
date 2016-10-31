@@ -14,14 +14,16 @@ public class InstagramMedia {
 
     private String instagramId;
     private String imageUrl;
+    private String caption;
 
     protected InstagramMedia() {
 
     }
 
-    public InstagramMedia(String instagramId, String imageUrl) {
+    public InstagramMedia(String instagramId, String imageUrl, String caption) {
         this.instagramId = instagramId;
         this.imageUrl = imageUrl;
+        this.caption = caption;
     }
 
     @Override
@@ -39,5 +41,9 @@ public class InstagramMedia {
 
     public Long getId() {
         return id;
+    }
+
+    public String getCaption() {
+        return caption;
     }
 }

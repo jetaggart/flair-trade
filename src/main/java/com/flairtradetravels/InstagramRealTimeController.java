@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Controller
 public class InstagramRealTimeController {
@@ -54,15 +55,34 @@ public class InstagramRealTimeController {
                 Instagram instagram = new Instagram(token);
 
                 MediaFeedData data = instagram.getMediaInfo(instagramId).getData();
-                String imageUrl = data.getImages().getStandardResolution().getImageUrl();
 
-                InstagramMedia instagramMedia = instagramMediaRepository.save(new InstagramMedia(instagramId, imageUrl));
+                List<String> tags = data.getTags();
 
-                data.getTags().forEach(tagText -> findOrCreateTag(tagText, instagramMedia));
+                if (hasFlairTradeTags(tags)) {
+                    createMedia(instagramId, data, tags);
+                }
             }
 
             return "";
         }
+    }
+
+    private void createMedia(String instagramId, MediaFeedData data, List<String> tags) {
+        InstagramMedia instagramMedia = instagramMediaRepository.save(
+            new InstagramMedia(
+                instagramId,
+                data.getImages().getStandardResolution().getImageUrl(),
+                data.getCaption().getText()
+            )
+        );
+
+        tags.forEach(tagText -> findOrCreateTag(tagText, instagramMedia));
+    }
+
+    private boolean hasFlairTradeTags(List<String> tags) {
+        return tags.stream().anyMatch(
+            tag -> Pattern.matches("^flairtrade.*$", tag)
+        );
     }
 
     private void findOrCreateTag(String tagText, InstagramMedia media) {
