@@ -67,8 +67,45 @@ public class HomeController {
             return "$" + parseCost(findFlairTradeTag());
         }
 
+        public String getTime() throws Exception {
+            String tag = findFlairTradeTag();
+
+            String days = parseDays(tag);
+            String daysString = days != null ? String.format("%s days", days) : "0 days";
+            String hours = parseHours(tag);
+            String hoursString = hours != null ? String.format("%s hours", hours) : "0 hours";
+            String minutes = parseMinutes(tag);
+            String minutesString = minutes != null ? String.format("%s minutes", minutes) : "0 minutes";
+
+            return String.format("%s, %s, %s", daysString, hoursString, minutesString);
+        }
+
+        private String parseMinutes(String tag) {
+            return extractGroup(".*[_|d|h](\\d+)m.*", tag);
+        }
+
+        private String parseHours(String tag) {
+            return extractGroup(".*[_|d|m](\\d+)h.*", tag);
+        }
+
+        private String parseDays(String tag) {
+            return extractGroup(".*[_|h|m](\\d+)d.*", tag);
+        }
+
         public String getUrl() {
             return url;
+        }
+
+        private String extractGroup(String regex, String tag) {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(tag);
+
+            try {
+                matcher.matches();
+                return matcher.group(1);
+            } catch (IllegalStateException ex) {
+                return null;
+            }
         }
 
         public List<String> getTags() {
@@ -83,7 +120,7 @@ public class HomeController {
             Optional<String> flairTag = tags.stream()
                 .filter(tag -> Pattern.matches("^flairtrade.*$", tag))
                 .findFirst();
-            if(flairTag.isPresent()) {
+            if (flairTag.isPresent()) {
                 return flairTag.get();
             } else {
                 throw new Exception("Should not have a post with no flair tag");
@@ -94,8 +131,7 @@ public class HomeController {
             Pattern pattern = Pattern.compile(".*_(\\d+)usd.*");
             Matcher matcher = pattern.matcher(tag);
             matcher.matches();
-            String cost = matcher.group(1);
-            return cost;
+            return matcher.group(1);
         }
 
     }

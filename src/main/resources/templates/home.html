@@ -11,6 +11,7 @@
   <div th:each="media : ${mediaItems}">
     <h2 th:text="${media.caption}"></h2>
     <h2 th:text="${media.cost}"></h2>
+    <h2 th:text="${media.time}"></h2>
     <img src="http://image.com" th:src="${media.url}"/>
     <div th:each="tag : ${media.tags}">
       <p th:text="'#' + ${tag}"></p>
