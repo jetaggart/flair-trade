@@ -36,4 +36,8 @@ public class InstagramMedia {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public Long getId() {
+        return id;
+    }
 }

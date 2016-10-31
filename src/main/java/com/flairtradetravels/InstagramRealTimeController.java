@@ -1,10 +1,10 @@
 package com.flairtradetravels;
 
-import com.flairtradetravels.entities.InstagramMedia;
-import com.flairtradetravels.entities.InstagramMediaRepository;
+import com.flairtradetravels.entities.*;
 import org.jinstagram.Instagram;
 import org.jinstagram.auth.model.Token;
 import org.jinstagram.auth.oauth.InstagramService;
+import org.jinstagram.entity.users.feed.MediaFeedData;
 import org.jinstagram.exceptions.InstagramException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,19 +16,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 public class InstagramRealTimeController {
     private final InstagramMediaRepository instagramMediaRepository;
-    private final InstagramService instagramService;
     @Value("${instagram.appToken}")
     private String appToken;
 
+    private InstagramTagRepository instagramTagRepository;
+    private InstagramMediaTagRepository instagramMediaTagRepository;
+
     @Autowired
-    public InstagramRealTimeController(InstagramMediaRepository instagramMediaRepository, InstagramService instagramService) {
+    public InstagramRealTimeController(InstagramMediaRepository instagramMediaRepository, InstagramService instagramService, InstagramTagRepository instagramTagRepository, InstagramMediaTagRepository instagramMediaTagRepository) {
         this.instagramMediaRepository = instagramMediaRepository;
-        this.instagramService = instagramService;
+        this.instagramTagRepository = instagramTagRepository;
+        this.instagramMediaTagRepository = instagramMediaTagRepository;
     }
     // [{"changed_aspect": "media", "object": "user", "object_id": "190277687", "time": 1477869300, "subscription_id": 0, "data": {"media_id": "1372789645779973559_190277687"}}]
 
@@ -49,12 +52,31 @@ public class InstagramRealTimeController {
 
                 Token token = new Token(appToken, null);
                 Instagram instagram = new Instagram(token);
-                String imageUrl = instagram.getMediaInfo(instagramId).getData().getImages().getStandardResolution().getImageUrl();
 
-                instagramMediaRepository.save(new InstagramMedia(instagramId, imageUrl));
+                MediaFeedData data = instagram.getMediaInfo(instagramId).getData();
+                String imageUrl = data.getImages().getStandardResolution().getImageUrl();
+
+                InstagramMedia instagramMedia = instagramMediaRepository.save(new InstagramMedia(instagramId, imageUrl));
+
+                data.getTags().forEach(tagText -> findOrCreateTag(tagText, instagramMedia));
             }
 
             return "";
         }
+    }
+
+    private void findOrCreateTag(String tagText, InstagramMedia media) {
+        List<InstagramTag> result = instagramTagRepository.findByText(tagText);
+
+        InstagramTag instagramTag;
+        if (result.isEmpty()) {
+            instagramTag = instagramTagRepository.save(new InstagramTag(tagText));
+        } else {
+            instagramTag = result.get(0);
+        }
+
+        instagramMediaTagRepository.save(
+            new InstagramMediaTag(media.getId(), instagramTag.getId())
+        );
     }
 }
