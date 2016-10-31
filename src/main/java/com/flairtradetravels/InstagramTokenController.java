@@ -25,6 +25,7 @@ public class InstagramTokenController {
 
     @GetMapping("/instagram/token")
     public String instagramToken(@RequestParam(value = "code") String code, Model model) throws InstagramException {
+        System.out.println(code);
         Verifier verifier = new Verifier(code);
         Token accessToken = instagramService.getAccessToken(verifier);
 

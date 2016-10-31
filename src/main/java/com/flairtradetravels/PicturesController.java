@@ -19,12 +19,10 @@ import java.util.List;
 @Controller
 public class PicturesController {
 
-    private final InstagramService instagramService;
     private final HttpSession session;
 
     @Autowired
-    public PicturesController(InstagramService instagramService, HttpSession session) {
-        this.instagramService = instagramService;
+    public PicturesController(HttpSession session) {
         this.session = session;
     }
 
@@ -43,6 +41,7 @@ public class PicturesController {
         model.addAttribute("caption", mediaFeed.get(0).getCaption().getText());
         model.addAttribute("tags", mediaFeed.get(0).getTags());
         model.addAttribute("name", fullName + username);
+        System.out.println(instagramToken.toString());
 
 
         return "/pictures";
