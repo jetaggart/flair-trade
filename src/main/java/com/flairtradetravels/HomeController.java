@@ -22,7 +22,7 @@ public class HomeController {
     @RequestMapping("/")
     public String home(Model model) {
         model.addAttribute("authorizationUrl", instagramService.getAuthorizationUrl());
-        model.addAttribute("mediaItems", instagramMediaRepository.findAll());
+        model.addAttribute("mediaItems", instagramMediaRepository.findAllByOrderByIdDesc());
 
         return "home";
     }
